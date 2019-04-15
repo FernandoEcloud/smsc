@@ -1,23 +1,22 @@
-class Smsc {
+export default class smsc {
+  public version = "0.3";
+  public protocol = "https";
   /**
    * @var string ApiKey de SMSC
    */
-  private apikey;
+  private apikey: string = "";
   /**
    * @var string Alias de SMSC
    */
-  private alias;
-  public version = '0.3';
-  public protocol = 'https';
+  private alias: string = "";
 
   private priority = null;
   private line = null;
-  private mensaje;
-  private numeros = [];
-  private return;
+  private mensaje: any;
+  private numeros: any[] = [];
+  private return: any;
 
-
-  public constructor(alias = null, apikey = null) {
+  public constructor(alias: string, apikey: string) {
     if (alias !== null) {
       this.setAlias(alias);
     }
@@ -26,90 +25,89 @@ class Smsc {
     }
   }
 
-
   public getApikey = () => {
     return this.apikey;
   }
-  public setApikey = (apikey) => {
+  public setApikey = (apikey: string) => {
     this.apikey = apikey;
   }
   public getAlias = () => {
     return this.alias;
   }
-  public setAlias = (alias) => {
+  public setAlias = (alias: string) => {
     this.alias = alias;
   }
   public getData = () => {
-    return this.return['data'];
+    return this.return.data;
   }
   public getStatusCode = () => {
-    return this.return['code'];
+    return this.return.code;
   }
   public getStatusMessage = () => {
-    return this.return['message'];
+    return this.return.message;
   }
-  public exec = (cmd = null, extradata = null) => {
+  public exec = (cmd: any = null, extradata: any = null): any => {
     const THIS = this;
     THIS.return = null;
     // construyo la URL de consulta
     const url = `${this.protocol}://www.smsc.com.ar/api/${this.version}/?alias=${this.alias}&apikey=${this.apikey}`;
-    let url2 = '';
+    let url2 = "";
     if (cmd !== null) {
       url2 += `&cmd=${cmd}`;
     }
     if (extradata !== null) {
       url2 += extradata;
     }
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', url + url2);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onload = function () {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url + url2);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onload = () => {
       if (xhr.status === 200) {
         const ret = JSON.parse(xhr.responseText);
         if (Array.isArray(ret)) {
-          throw new Error('Datos recibidos, pero no han podido ser reconocidos ("' + ret + '") (url2=' + url2 + ').');
+          throw new Error('Datos recibidos, pero no han podido ser reconocidos ("' + ret + '") (url2=' + url2 + ").");
           return false;
         }
-        THIS.return = ret;
-      }
-      else if (xhr.status !== 200) {
-        throw new Error('No se pudo conectar al servidor. Estado:' + xhr.status);
+        return THIS.return = ret;
+      } else if (xhr.status !== 200) {
+        throw new Error("No se pudo conectar al servidor. Estado:" + xhr.status);
         return false;
       }
     };
     xhr.send();
-    return true;
   }
   /**
    * Estado del sistema SMSC.
    * @return bool Devuelve true si no hay demoras en la entrega.
    */
   public getEstado = () => {
-    let ret = this.exec('estado');
-    if (!ret)
+    let ret = this.exec("estado");
+    if (!ret) {
       return false;
-    if (this.getStatusCode() != 200) {
+    }
+    if (this.getStatusCode() !== 200) {
       throw new Error(this.getStatusMessage() + this.getStatusCode());
       return false;
     } else {
       ret = this.getData();
-      return ret['estado'];
+      return ret.estado;
     }
   }
   /**
    * Validar número
    * @return bool Devuelve true si es un número válido.
    */
-  public evalNumero = (prefijo, fijo = null) => {
-    let ret = this.exec('evalnumero', '&num=' + prefijo + (fijo === null ? '' : '-' + fijo));
-    if (!ret)
+  public evalNumero = (prefijo: any, fijo: any = null) => {
+    let ret = this.exec("evalnumero", "&num=" + prefijo + (fijo === null ? "" : "-" + fijo));
+    if (!ret) {
       return false;
-    if (this.getStatusCode() != 200) {
+    }
+    if (this.getStatusCode() !== 200) {
       throw new Error(this.getStatusMessage() + this.getStatusCode());
       return false;
     } else {
       ret = this.getData();
-      return ret['estado'];
+      return ret.estado;
     }
   }
   /**
@@ -117,15 +115,16 @@ class Smsc {
    * @return array
    */
   public getSaldo = () => {
-    let ret = this.exec('saldo');
-    if (!ret)
+    let ret = this.exec("saldo");
+    if (!ret) {
       return false;
-    if (this.getStatusCode() != 200) {
+    }
+    if (this.getStatusCode() !== 200) {
       throw new Error(this.getStatusMessage() + this.getStatusCode());
       return false;
     } else {
       ret = this.getData();
-      return ret['mensajes'];
+      return ret.mensajes;
     }
   }
   /**
@@ -134,15 +133,16 @@ class Smsc {
    * @return array
    */
   public getEncolados = (prioridad = 0) => {
-    let ret = this.exec('encolados', '&prioridad=' + +prioridad);
-    if (!ret)
+    let ret = this.exec("encolados", "&prioridad=" + +prioridad);
+    if (!ret) {
       return false;
-    if (this.getStatusCode() != 200) {
+    }
+    if (this.getStatusCode() !== 200) {
       throw new Error(this.getStatusMessage() + this.getStatusCode());
       return false;
     } else {
       ret = this.getData();
-      return ret['mensajes'];
+      return ret.mensajes;
     }
   }
   /**
@@ -157,54 +157,57 @@ class Smsc {
    *                    Si sólo especifica prefijo, se tomará como número completo (no recomendado).
    *                    Ej: 530000
    */
-  public addNumero = (prefijo, fijo = null) => {
+  public addNumero = (prefijo: any, fijo: any = null) => {
     if (fijo === null) {
       this.numeros.push(prefijo);
     } else {
-      this.numeros.push(prefijo + '-' + fijo);
+      this.numeros.push(prefijo + "-" + fijo);
     }
   }
   public getMensaje = () => {
     return this.mensaje;
   }
-  public setMensaje = (mensaje) => {
+  public setMensaje = (mensaje: string) => {
     this.mensaje = mensaje;
   }
 
-  public getLinea = () => {
+  public getLinea = (): any => {
     return this.line;
   }
   /**
    * @param int $line_id. Only for dedicated lines.
    */
-  public setLinea = (line_id) => {
+  public setLinea = (line_id: any) => {
     this.line = line_id;
   }
-  public getPrioridad = () => {
+  public getPrioridad = (): any => {
     return this.line;
   }
   /**
    * @param int $priority 1 for low to 7 for high. null for default.
    */
-  public setPrioridad = (priority) => {
+  public setPrioridad = (priority: any) => {
     this.priority = priority;
   }
 
   public enviar = () => {
-    let params = [];
+    const params = [];
     params.push(`num=${this.numeros.join(",")}`);
     params.push(`msj=${encodeURI(this.mensaje)}`);
 
-    if (this.getLinea() > 0)
+    if (this.getLinea() > 0) {
       params.push(`line='${this.getLinea()}`);
+    }
 
-    if (this.getPrioridad() > 0)
+    if (this.getPrioridad() > 0) {
       params.push(`{priority=${this.getPrioridad()}`);
+    }
 
-    const ret = this.exec('enviar', `&${params.join("&")}`);
-    if (!ret)
+    const ret = this.exec("enviar", `&${params.join("&")}`);
+    if (!ret) {
       return false;
-    if (this.getStatusCode() != 200) {
+    }
+    if (this.getStatusCode() !== 200) {
       throw new Error(this.getStatusMessage() + this.getStatusCode());
     } else {
       return this.getData();
@@ -217,19 +220,20 @@ class Smsc {
    */
   /**
    * Devuelve los últimos 30 SMSC recibidos.
-   * 
+   *
    * Lo óptimo es usar esta función cuando se recibe la notificación, que puede
    * especificar en https://www.smsc.com.ar/usuario/api/
-   * 
+   *
    * @param int $ultimoid si se especifica, el sistema sólo devuelve los SMS
    * más nuevos al sms con id especificado (acelera la
    * consulta y permite un chequeo rápido de nuevos mensajes)
    */
   public getRecibidos = ($ultimoid = 0) => {
-    const ret = this.exec('recibidos', `&ultimoid=${+$ultimoid}`);
-    if (!ret)
+    const ret = this.exec("recibidos", `&ultimoid=${+$ultimoid}`);
+    if (!ret) {
       return false;
-    if (this.getStatusCode() != 200) {
+    }
+    if (this.getStatusCode() !== 200) {
       throw new Error(this.getStatusMessage() + this.getStatusCode());
     } else {
       return this.getData();
