@@ -1,1 +1,1 @@
-module.exports = require('./src/smsc.ts');
+module.exports = require('./src/smsc.js');
