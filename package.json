@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,11 @@
   "bugs": {
     "url": "https://github.com/FernandoEcloud/smsc/issues"
   },
-  "homepage": "https://github.com/FernandoEcloud/smsc#readme"
+  "homepage": "https://github.com/FernandoEcloud/smsc#readme",
+  "devDependencies": {
+    "prettier": "^1.17.0",
+    "tslint": "^5.15.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.4.3"
+  }
 }

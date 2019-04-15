@@ -1,4 +1,4 @@
-export default class smsc {
+export default class Smsc {
   public version = "0.3";
   public protocol = "https";
   /**
@@ -27,30 +27,32 @@ export default class smsc {
 
   public getApikey = () => {
     return this.apikey;
-  }
+  };
   public setApikey = (apikey: string) => {
     this.apikey = apikey;
-  }
+  };
   public getAlias = () => {
     return this.alias;
-  }
+  };
   public setAlias = (alias: string) => {
     this.alias = alias;
-  }
+  };
   public getData = () => {
     return this.return.data;
-  }
+  };
   public getStatusCode = () => {
     return this.return.code;
-  }
+  };
   public getStatusMessage = () => {
     return this.return.message;
-  }
+  };
   public exec = (cmd: any = null, extradata: any = null): any => {
     const THIS = this;
     THIS.return = null;
     // construyo la URL de consulta
-    const url = `${this.protocol}://www.smsc.com.ar/api/${this.version}/?alias=${this.alias}&apikey=${this.apikey}`;
+    const url = `${this.protocol}://www.smsc.com.ar/api/${
+      this.version
+    }/?alias=${this.alias}&apikey=${this.apikey}`;
     let url2 = "";
     if (cmd !== null) {
       url2 += `&cmd=${cmd}`;
@@ -65,17 +67,25 @@ export default class smsc {
       if (xhr.status === 200) {
         const ret = JSON.parse(xhr.responseText);
         if (Array.isArray(ret)) {
-          throw new Error('Datos recibidos, pero no han podido ser reconocidos ("' + ret + '") (url2=' + url2 + ").");
+          throw new Error(
+            'Datos recibidos, pero no han podido ser reconocidos ("' +
+              ret +
+              '") (url2=' +
+              url2 +
+              ")."
+          );
           return false;
         }
-        return THIS.return = ret;
+        return (THIS.return = ret);
       } else if (xhr.status !== 200) {
-        throw new Error("No se pudo conectar al servidor. Estado:" + xhr.status);
+        throw new Error(
+          "No se pudo conectar al servidor. Estado:" + xhr.status
+        );
         return false;
       }
     };
     xhr.send();
-  }
+  };
   /**
    * Estado del sistema SMSC.
    * @return bool Devuelve true si no hay demoras en la entrega.
@@ -92,13 +102,16 @@ export default class smsc {
       ret = this.getData();
       return ret.estado;
     }
-  }
+  };
   /**
    * Validar número
    * @return bool Devuelve true si es un número válido.
    */
   public evalNumero = (prefijo: any, fijo: any = null) => {
-    let ret = this.exec("evalnumero", "&num=" + prefijo + (fijo === null ? "" : "-" + fijo));
+    let ret = this.exec(
+      "evalnumero",
+      "&num=" + prefijo + (fijo === null ? "" : "-" + fijo)
+    );
     if (!ret) {
       return false;
     }
@@ -109,7 +122,7 @@ export default class smsc {
       ret = this.getData();
       return ret.estado;
     }
-  }
+  };
   /**
    *
    * @return array
@@ -126,7 +139,7 @@ export default class smsc {
       ret = this.getData();
       return ret.mensajes;
     }
-  }
+  };
   /**
    *
    * @param int $prioridad 0:todos 1:baja 2:media 3:alta
@@ -144,7 +157,7 @@ export default class smsc {
       ret = this.getData();
       return ret.mensajes;
     }
-  }
+  };
   /**
    * *******************************************
    * *******   Metodos para enviar SMS   *******
@@ -163,32 +176,32 @@ export default class smsc {
     } else {
       this.numeros.push(prefijo + "-" + fijo);
     }
-  }
+  };
   public getMensaje = () => {
     return this.mensaje;
-  }
+  };
   public setMensaje = (mensaje: string) => {
     this.mensaje = mensaje;
-  }
+  };
 
   public getLinea = (): any => {
     return this.line;
-  }
+  };
   /**
    * @param int $line_id. Only for dedicated lines.
    */
-  public setLinea = (line_id: any) => {
-    this.line = line_id;
-  }
+  public setLinea = (lineId: any) => {
+    this.line = lineId;
+  };
   public getPrioridad = (): any => {
     return this.line;
-  }
+  };
   /**
    * @param int $priority 1 for low to 7 for high. null for default.
    */
   public setPrioridad = (priority: any) => {
     this.priority = priority;
-  }
+  };
 
   public enviar = () => {
     const params = [];
@@ -212,7 +225,7 @@ export default class smsc {
     } else {
       return this.getData();
     }
-  }
+  };
   /**
    * ***********************************************
    * *******  Metodos para hacer consultas   *******
@@ -238,5 +251,5 @@ export default class smsc {
     } else {
       return this.getData();
     }
-  }
+  };
 }
