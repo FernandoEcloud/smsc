@@ -2,22 +2,22 @@ class Smsc {
   /**
    * @var string ApiKey de SMSC
    */
-  private apikey;
+  apikey;
   /**
    * @var string Alias de SMSC
    */
-  private alias;
-  public version = '0.3';
-  public protocol = 'https';
+  alias;
+  version = '0.3';
+  protocol = 'https';
 
-  private priority = null;
-  private line = null;
-  private mensaje;
-  private numeros = [];
-  private return;
+  priority = null;
+  line = null;
+  mensaje;
+  numeros = [];
+  return;
 
 
-  public constructor(alias = null, apikey = null) {
+  constructor(alias = null, apikey = null) {
     if (alias !== null) {
       this.setAlias(alias);
     }
@@ -27,28 +27,28 @@ class Smsc {
   }
 
 
-  public getApikey = () => {
+  getApikey = () => {
     return this.apikey;
   }
-  public setApikey = (apikey) => {
+  setApikey = (apikey) => {
     this.apikey = apikey;
   }
-  public getAlias = () => {
+  getAlias = () => {
     return this.alias;
   }
-  public setAlias = (alias) => {
+  setAlias = (alias) => {
     this.alias = alias;
   }
-  public getData = () => {
+  getData = () => {
     return this.return['data'];
   }
-  public getStatusCode = () => {
+  getStatusCode = () => {
     return this.return['code'];
   }
-  public getStatusMessage = () => {
+  getStatusMessage = () => {
     return this.return['message'];
   }
-  public exec = (cmd = null, extradata = null) => {
+  exec = (cmd = null, extradata = null) => {
     const THIS = this;
     THIS.return = null;
     // construyo la URL de consulta
@@ -84,7 +84,7 @@ class Smsc {
    * Estado del sistema SMSC.
    * @return bool Devuelve true si no hay demoras en la entrega.
    */
-  public getEstado = () => {
+  getEstado = () => {
     let ret = this.exec('estado');
     if (!ret)
       return false;
@@ -100,7 +100,7 @@ class Smsc {
    * Validar número
    * @return bool Devuelve true si es un número válido.
    */
-  public evalNumero = (prefijo, fijo = null) => {
+  evalNumero = (prefijo, fijo = null) => {
     let ret = this.exec('evalnumero', '&num=' + prefijo + (fijo === null ? '' : '-' + fijo));
     if (!ret)
       return false;
@@ -116,7 +116,7 @@ class Smsc {
    *
    * @return array
    */
-  public getSaldo = () => {
+  getSaldo = () => {
     let ret = this.exec('saldo');
     if (!ret)
       return false;
@@ -133,7 +133,7 @@ class Smsc {
    * @param int $prioridad 0:todos 1:baja 2:media 3:alta
    * @return array
    */
-  public getEncolados = (prioridad = 0) => {
+  getEncolados = (prioridad = 0) => {
     let ret = this.exec('encolados', '&prioridad=' + +prioridad);
     if (!ret)
       return false;
@@ -157,40 +157,40 @@ class Smsc {
    *                    Si sólo especifica prefijo, se tomará como número completo (no recomendado).
    *                    Ej: 530000
    */
-  public addNumero = (prefijo, fijo = null) => {
+  addNumero = (prefijo, fijo = null) => {
     if (fijo === null) {
       this.numeros.push(prefijo);
     } else {
       this.numeros.push(prefijo + '-' + fijo);
     }
   }
-  public getMensaje = () => {
+  getMensaje = () => {
     return this.mensaje;
   }
-  public setMensaje = (mensaje) => {
+  setMensaje = (mensaje) => {
     this.mensaje = mensaje;
   }
 
-  public getLinea = () => {
+  getLinea = () => {
     return this.line;
   }
   /**
    * @param int $line_id. Only for dedicated lines.
    */
-  public setLinea = (line_id) => {
+  setLinea = (line_id) => {
     this.line = line_id;
   }
-  public getPrioridad = () => {
+  getPrioridad = () => {
     return this.line;
   }
   /**
    * @param int $priority 1 for low to 7 for high. null for default.
    */
-  public setPrioridad = (priority) => {
+  setPrioridad = (priority) => {
     this.priority = priority;
   }
 
-  public enviar = () => {
+  enviar = () => {
     let params = [];
     params.push(`num=${this.numeros.join(",")}`);
     params.push(`msj=${encodeURI(this.mensaje)}`);
@@ -225,7 +225,7 @@ class Smsc {
    * más nuevos al sms con id especificado (acelera la
    * consulta y permite un chequeo rápido de nuevos mensajes)
    */
-  public getRecibidos = ($ultimoid = 0) => {
+  getRecibidos = ($ultimoid = 0) => {
     const ret = this.exec('recibidos', `&ultimoid=${+$ultimoid}`);
     if (!ret)
       return false;
