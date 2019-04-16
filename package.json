@@ -32,7 +32,8 @@
     "typescript": "^3.4.3"
   },
   "files": [
-    "lib /**/*"
+    "lib/index.js",
+    "lib/index.d.ts"
   ],
   "keywords": [
     "smsc.com.ar",
