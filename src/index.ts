@@ -49,51 +49,51 @@ export default class Smsc {
     return this.return.message;
   };
   public exec = (cmd: any = null, extradata: any = null): any => {
-    const THIS = this;
-    THIS.return = null;
-    // construyo la URL de consulta
-    const url = `${this.protocol}://www.smsc.com.ar/api/${
-      this.version
-      }/?alias=${this.alias}&apikey=${this.apikey}`;
-    let url2 = "";
-    if (cmd !== null) {
-      url2 += `&cmd=${cmd}`;
-    }
-    if (extradata !== null) {
-      url2 += extradata;
-    }
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", url + url2);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        const ret = JSON.parse(xhr.responseText);
-        if (Array.isArray(ret)) {
-          throw new Error(
-            'Datos recibidos, pero no han podido ser reconocidos ("' +
-            ret +
-            '") (url2=' +
-            url2 +
-            ")."
-          );
-          return false;
-        }
-        return (THIS.return = ret);
-      } else if (xhr.status !== 200) {
-        throw new Error(
-          "No se pudo conectar al servidor. Estado:" + xhr.status
-        );
-        return false;
+    return new Promise((resolve, reject) => {
+      const THIS = this;
+      THIS.return = null;
+      // construyo la URL de consulta
+      const url = `${this.protocol}://www.smsc.com.ar/api/${
+        this.version
+        }/?alias=${this.alias}&apikey=${this.apikey}`;
+      let url2 = "";
+      if (cmd !== null) {
+        url2 += `&cmd=${cmd}`;
       }
-    };
-    xhr.send();
-  };
+      if (extradata !== null) {
+        url2 += extradata;
+      }
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url + url2);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const ret = JSON.parse(xhr.responseText);
+          if (!Array.isArray(ret)) {
+            reject(new Error(
+              'Datos recibidos, pero no han podido ser reconocidos ("' +
+              ret +
+              '") (url2=' +
+              url2 +
+              ")."
+            ));
+          }
+          resolve(THIS.return = ret);
+        } else if (xhr.status !== 200) {
+          resolve(new Error(
+            "No se pudo conectar al servidor. Estado:" + xhr.status
+          ));
+        }
+      };
+      xhr.send();
+    });
+  }
   /**
    * Estado del sistema SMSC.
    * @return bool Devuelve true si no hay demoras en la entrega.
    */
-  public getEstado = () => {
-    let ret = this.exec("estado");
+  public getEstado = async () => {
+    let ret = await this.exec("estado");
     if (!ret) {
       return false;
     }
@@ -109,8 +109,8 @@ export default class Smsc {
    * Validar número
    * @return bool Devuelve true si es un número válido.
    */
-  public evalNumero = (prefijo: any, fijo: any = null) => {
-    let ret = this.exec(
+  public evalNumero = async (prefijo: any, fijo: any = null) => {
+    let ret = await this.exec(
       "evalnumero",
       "&num=" + prefijo + (fijo === null ? "" : "-" + fijo)
     );
@@ -129,8 +129,8 @@ export default class Smsc {
    *
    * @return array
    */
-  public getSaldo = () => {
-    let ret = this.exec("saldo");
+  public getSaldo = async () => {
+    let ret = await this.exec("saldo");
     if (!ret) {
       return false;
     }
@@ -147,8 +147,8 @@ export default class Smsc {
    * @param int $prioridad 0:todos 1:baja 2:media 3:alta
    * @return array
    */
-  public getEncolados = (prioridad = 0) => {
-    let ret = this.exec("encolados", "&prioridad=" + +prioridad);
+  public getEncolados = async (prioridad = 0) => {
+    let ret = await this.exec("encolados", "&prioridad=" + +prioridad);
     if (!ret) {
       return false;
     }
@@ -205,7 +205,7 @@ export default class Smsc {
     this.priority = priority;
   };
 
-  public enviar = () => {
+  public enviar = async () => {
     const params = [];
     params.push(`num=${this.numeros.join(",")}`);
     params.push(`msj=${encodeURI(this.mensaje)}`);
@@ -218,7 +218,7 @@ export default class Smsc {
       params.push(`{priority=${this.getPrioridad()}`);
     }
 
-    const ret = this.exec("enviar", `&${params.join("&")}`);
+    const ret = await this.exec("enviar", `&${params.join("&")}`);
     if (!ret) {
       return false;
     }
@@ -244,7 +244,7 @@ export default class Smsc {
    * consulta y permite un chequeo rápido de nuevos mensajes)
    */
   public getRecibidos = ($ultimoid = 0) => {
-    const ret = this.exec("recibidos", `&ultimoid=${+$ultimoid}`);
+    const ret = await this.exec("recibidos", `&ultimoid=${+$ultimoid}`);
     if (!ret) {
       return false;
     }
