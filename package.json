@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/FernandoEcloud/smsc#readme",
   "devDependencies": {
+    "@types/node": "^11.13.4",
     "prettier": "^1.17.0",
     "tslint": "^5.15.0",
     "tslint-config-prettier": "^1.18.0",
@@ -38,5 +39,8 @@
   "keywords": [
     "smsc.com.ar",
     "eCloudSolutions"
-  ]
+  ],
+  "dependencies": {
+    "xmlhttprequest": "^1.8.0"
+  }
 }

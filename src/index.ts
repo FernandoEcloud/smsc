@@ -1,3 +1,5 @@
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
 export default class Smsc {
   public version = "0.3";
   public protocol = "https";
@@ -52,7 +54,7 @@ export default class Smsc {
     // construyo la URL de consulta
     const url = `${this.protocol}://www.smsc.com.ar/api/${
       this.version
-    }/?alias=${this.alias}&apikey=${this.apikey}`;
+      }/?alias=${this.alias}&apikey=${this.apikey}`;
     let url2 = "";
     if (cmd !== null) {
       url2 += `&cmd=${cmd}`;
@@ -69,10 +71,10 @@ export default class Smsc {
         if (Array.isArray(ret)) {
           throw new Error(
             'Datos recibidos, pero no han podido ser reconocidos ("' +
-              ret +
-              '") (url2=' +
-              url2 +
-              ")."
+            ret +
+            '") (url2=' +
+            url2 +
+            ")."
           );
           return false;
         }
