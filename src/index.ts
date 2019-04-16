@@ -69,15 +69,6 @@ export default class Smsc {
       xhr.onload = () => {
         if (xhr.status === 200) {
           const ret = JSON.parse(xhr.responseText);
-          if (!Array.isArray(ret)) {
-            reject(new Error(
-              'Datos recibidos, pero no han podido ser reconocidos ("' +
-              ret +
-              '") (url2=' +
-              url2 +
-              ")."
-            ));
-          }
           resolve(THIS.return = ret);
         } else if (xhr.status !== 200) {
           resolve(new Error(
