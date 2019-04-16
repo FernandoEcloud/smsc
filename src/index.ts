@@ -243,7 +243,7 @@ export default class Smsc {
    * más nuevos al sms con id especificado (acelera la
    * consulta y permite un chequeo rápido de nuevos mensajes)
    */
-  public getRecibidos = ($ultimoid = 0) => {
+  public getRecibidos = async ($ultimoid = 0) => {
     const ret = await this.exec("recibidos", `&ultimoid=${+$ultimoid}`);
     if (!ret) {
       return false;
